@@ -1,0 +1,37 @@
+import net.dg.springbootruleengine.model.OrderRequest
+import net.dg.springbootruleengine.enums.CustomerType;
+global net.dg.springbootruleengine.model.OrderDiscount orderDiscount;
+
+dialect "mvel"
+ 
+rule "Age based discount"
+    when
+        OrderRequest(age < 20 || age > 50)
+    then
+        System.out.println("========== Adding 10% discount for Kids/ senior customer =============");
+        orderDiscount.setDiscount(orderDiscount.getDiscount() + 10);
+end
+ 
+rule "Customer type based discount - Loyal customer"
+    when
+        OrderRequest(customerType.getValue == CustomerType.LOYAL.getValue())
+    then
+        System.out.println("========== Adding 5% discount for LOYAL customer =============");
+        orderDiscount.setDiscount(orderDiscount.getDiscount() + 5);
+end
+     
+rule "Customer type based discount - others"
+    when
+        OrderRequest(customerType.getValue != "LOYAL")
+    then
+        System.out.println("==========Adding 3% discount for NEW or DISSATISFIED customer=============");
+        orderDiscount.setDiscount(orderDiscount.getDiscount() + 3);
+end
+ 
+rule "Amount based discount"
+    when
+        OrderRequest(amount > 1000)
+    then
+        System.out.println("==========Adding 7% discount for amount more than 1000$=============");
+        orderDiscount.setDiscount(orderDiscount.getDiscount() + 7);
+end
